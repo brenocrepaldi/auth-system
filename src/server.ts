@@ -1,22 +1,44 @@
 import express from 'express';
-
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import mongoose from 'mongoose';
 import { env } from './env';
 import { connectDB } from './db';
-
 import userRoutes from './routes/user-routes';
 
-const app = express();
+const server = express();
+
+// HEADER information
+server.use(cors());
+server.disable('x-powered-by'); // Reduce fingerprinting
+server.use(cookieParser());
+server.use(express.urlencoded({ extended: false }));
+server.use(express.json());
 
 // Middleware to use routes
-app.use(express.json());
+server.use(express.json());
 
 // Routes
-app.use('/user', userRoutes);
+server.use('/user', userRoutes);
+server.get('/', (req, res) => {
+	try {
+		res.status(200).json({
+			status: 'success',
+			data: [],
+			message: 'homepage',
+		});
+	} catch (err) {
+		res.status(500).json({
+			status: 'error',
+			message: 'Internal Server Error',
+		});
+	}
+});
 
 // Database connection
 connectDB()
 	.then(() => {
-		app.listen({ port: env.PORT }, () => {
+		server.listen({ port: env.PORT }, () => {
 			console.log('Server running...');
 		});
 	})

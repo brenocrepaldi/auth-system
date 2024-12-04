@@ -15,7 +15,7 @@ export const dbCollections = {
 export async function connectDB() {
 	try {
 		await client.connect(); // Connects to the cluster
-		console.log('Connected to MongoDB');
+		console.log('Connected to database');
 		return client;
 	} catch (error) {
 		console.error('Failed to connect to MongoDB', error);
