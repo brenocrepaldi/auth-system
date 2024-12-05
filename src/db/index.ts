@@ -9,7 +9,7 @@ export const client = new MongoClient(uri);
 export const db = client.db('auth-system');
 
 export const dbCollections = {
-	user: db.collection('user'),
+	users: db.collection('users'),
 };
 
 export async function connectDB() {

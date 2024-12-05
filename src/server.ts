@@ -1,9 +1,8 @@
-import express from 'express';
-import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import mongoose from 'mongoose';
-import { env } from './env';
+import cors from 'cors';
+import express from 'express';
 import { connectDB } from './db';
+import { env } from './env';
 import userRoutes from './routes/user-routes';
 
 const server = express();
