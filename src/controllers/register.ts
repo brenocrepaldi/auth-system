@@ -1,9 +1,7 @@
 import User from '../models/user-model';
-import { dbCollections } from '../db';
-import bcrypt from 'bcrypt';
 
 /**
- * @route POST src/auth/register
+ * @route POST user/register
  * @desc Registers a user
  * @access Public
  */
@@ -23,7 +21,7 @@ export async function Register(req, res) {
 
 		// Check if user already exists
 		try {
-			const existingUser = await dbCollections.users.findOne({
+			const existingUser = await User.findOne({
 				email: newUser.email,
 			});
 
@@ -31,8 +29,7 @@ export async function Register(req, res) {
 				return res.status(400).json({
 					status: 'failed',
 					data: [],
-					message:
-						'It seems you already have an account, please log in instead.',
+					message: 'User already has an account',
 				});
 		} catch (error) {
 			return res.status(500).json({
@@ -43,13 +40,14 @@ export async function Register(req, res) {
 		}
 
 		try {
-			const savedUser = await newUser.save(); // save new user into the database
+			// save new user into the database
+			const savedUser = (await newUser.save()).toObject();
+			const { password, role, ...user_data } = savedUser;
 
 			res.status(200).json({
 				status: 'success',
-				data: [savedUser],
-				message:
-					'Thank you for registering with us. Your account has been successfully created.',
+				data: [user_data],
+				message: 'User registered',
 			});
 		} catch (err) {
 			res.status(500).json({
@@ -57,15 +55,6 @@ export async function Register(req, res) {
 				message: 'Error: ' + err,
 			});
 		}
-
-		// const { role, ...user_data } = savedUser;
-
-		// res.status(200).json({
-		// 	status: 'success',
-		// 	data: [savedUser],
-		// 	message:
-		// 		'Thank you for registering with us. Your account has been successfully created.',
-		// });
 	} catch (err) {
 		res.status(500).json({
 			status: 'error',

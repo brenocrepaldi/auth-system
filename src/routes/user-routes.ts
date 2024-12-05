@@ -1,26 +1,33 @@
-import { Router } from 'express';
+import express from 'express';
 import { check } from 'express-validator';
-import { Register } from '../controllers/auth';
-import { dbCollections } from '../db/index';
+import { Register } from '../controllers/register';
 import { Validate } from '../middleware/validate';
 
-const router = Router();
+const router = express.Router();
 
-// Get all users
-router.get('/', async (req, res) => {
+// home route
+router.get('/', (req, res) => {
 	try {
-		const courses = await dbCollections.users.find().toArray();
-		res.status(200).json(courses);
-	} catch (error) {
-		res
-			.status(500)
-			.json({ error: 'Failed to fetch courses', details: error.message });
+		res.status(200).json({
+			status: 'success',
+			data: [],
+			message: 'Welcome to the Auth API homepage!',
+		});
+	} catch (err) {
+		res.status(500).json({
+			status: 'error',
+			message: 'Internal Server Error',
+		});
 	}
 });
 
-// Register new user
+// Register route -- POST request
 router.post(
 	'/register',
+	check('email')
+		.isEmail()
+		.withMessage('Enter a valid email address')
+		.normalizeEmail(),
 	check('first_name')
 		.not()
 		.isEmpty()
@@ -33,10 +40,6 @@ router.post(
 		.withMessage('You last name is required')
 		.trim()
 		.escape(),
-	check('email')
-		.isEmail()
-		.withMessage('Enter a valid email address')
-		.normalizeEmail(),
 	check('password')
 		.notEmpty()
 		.isLength({ min: 8 })
