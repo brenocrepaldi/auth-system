@@ -22,7 +22,7 @@ export async function Login(req, res) {
 					'Invalid email or password. Please try again with the correct credentials.',
 			});
 
-		// validate password
+		// Validates password
 		const isPasswordValid = await bcrypt.compare(
 			`${req.body.password}`,
 			user.password
@@ -37,14 +37,23 @@ export async function Login(req, res) {
 					'Invalid email or password. Please try again with the correct credentials.',
 			});
 
-		// return user info except password
-		const { password, ...user_data } = user.toObject();
+		let options = {
+			maxAge: 20 * 60 * 1000, // would expire in 20minutes
+			httpOnly: true, // The cookie is only accessible by the web server
+			secure: true,
+			sameSite: 'None',
+		};
+
+		// generate session token for user
+		const token = user.generateAccessJWT();
+
+		// set the token to response header, so that the client sends it back on each subsequent request
+		res.cookie('SessionID', token, options);
 
 		res.status(200).json({
 			status: 'success',
-			data: [user_data],
 			message: 'You have successfully logged in.',
-		}); 
+		});
 	} catch (err) {
 		res.status(500).json({
 			status: 'error',

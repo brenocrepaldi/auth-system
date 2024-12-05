@@ -1,7 +1,20 @@
-import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import mongoose, { Document, Model } from 'mongoose';
+import { env } from '../env';
 
-const UserSchema = new mongoose.Schema(
+// User interface
+interface IUser extends Document {
+	first_name: string;
+	last_name: string;
+	email: string;
+	password: string;
+	role: string;
+	generateAccessJWT(): string;
+}
+
+// Define the schema
+const UserSchema = new mongoose.Schema<IUser>(
 	{
 		first_name: {
 			type: String,
@@ -37,6 +50,7 @@ const UserSchema = new mongoose.Schema(
 	}
 );
 
+// Pre-save middleware for hashing password
 UserSchema.pre('save', function (next) {
 	const user = this;
 
@@ -53,4 +67,14 @@ UserSchema.pre('save', function (next) {
 	});
 });
 
-export default mongoose.model('users', UserSchema);
+// Method to auto gererate JWT when logged in
+UserSchema.methods.generateAccessJWT = function () {
+	const payload = { id: this._id };
+
+	return jwt.sign(payload, env.SECRET_ACCESS_TOKEN, {
+		expiresIn: '20m',
+	});
+};
+
+const User: Model<IUser> = mongoose.model<IUser>('users', UserSchema);
+export default User;
