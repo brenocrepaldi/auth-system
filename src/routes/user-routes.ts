@@ -3,6 +3,7 @@ import { check } from 'express-validator';
 import { Register } from '../controllers/register';
 import { Validate } from '../middleware/validate';
 import { Login } from '../controllers/login';
+import { Verify, VerifyRole } from '../middleware/verify';
 
 const router = express.Router();
 
@@ -20,6 +21,14 @@ router.get('/', (req, res) => {
 			message: 'Internal Server Error',
 		});
 	}
+});
+
+// home route logged in
+router.get('/', Verify, (req, res) => {
+	res.status(200).json({
+		status: 'success',
+		message: 'Welcome to the your Dashboard!',
+	});
 });
 
 // Register route == POST request
@@ -60,5 +69,13 @@ router.post(
 	Validate,
 	Login
 );
+
+// Route that only admin user can access
+router.get('/admin', Verify, VerifyRole, (req, res) => {
+	res.status(200).json({
+		status: 'success',
+		message: 'Welcome to the Admin portal!',
+	});
+});
 
 export default router;
