@@ -1,16 +1,33 @@
 import jwt from 'jsonwebtoken';
 import { env } from '../env';
 import User from '../models/user-model';
+import Blacklist from '../models/blacklist';
 
 export async function Verify(req, res, next) {
 	try {
-		const authHeader = req.headers['cookie']; // get the session cookie from request header
+		// get the session cookie from request header
+		const authHeader = req.headers['cookie'];
 
-		if (!authHeader) return res.sendStatus(401); // if there is no cookie from request header, send an unauthorized response.
-		const cookie = authHeader.split('=')[1]; // If there is, split the cookie string to get the actual jwt
+		// if there is no cookie from request header, send an unauthorized response.
+		if (!authHeader) return res.sendStatus(401);
 
-		// Verify using jwt to see if token has been tampered with or if it has expired.
-		// that's like checking the integrity of the cookie
+		// if there is, split the cookie string to get the actual jwt
+		const cookie = authHeader.split('=')[1];
+		const accessToken = cookie.split(';')[0];
+
+		// checks if that token is blacklisted
+		const checkIfTokenIsBlacklisted = await Blacklist.findOne({
+			token: accessToken,
+		});
+
+		// if true, send an unathorized message, asking for a re-authentication.
+		if (checkIfTokenIsBlacklisted)
+			return res
+				.status(401)
+				.json({ message: 'This session has expired. Please login' });
+
+		// if token has not been blacklisted, verify with jwt to see if it has been tampered with or not
+		// this checks the integrity of the accessToken
 		jwt.verify(cookie, env.SECRET_ACCESS_TOKEN, async (err, decoded) => {
 			if (err) {
 				// if token has been altered or has expired, return an unauthorized error
@@ -19,10 +36,18 @@ export async function Verify(req, res, next) {
 					.json({ message: 'This session has expired. Please login' });
 			}
 
-			const { id } = decoded; // get user id from the decoded token
-			const user = await User.findById(id); // find user by that `id`
-			const { password, ...data } = user.toObject(); // return user object without the password
-			req.user = data; // put the data object into req.user
+			// get user id from the decoded token
+			const { id } = decoded;
+
+			// find user by that `id`
+			const user = await User.findById(id);
+
+			// return user object without the password
+			const { password, ...data } = user.toObject();
+
+			// put the data object into req.user
+			req.user = data;
+
 			next();
 		});
 	} catch (err) {

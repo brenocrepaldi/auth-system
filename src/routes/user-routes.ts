@@ -4,16 +4,16 @@ import { Register } from '../controllers/register';
 import { Validate } from '../middleware/validate';
 import { Login } from '../controllers/login';
 import { Verify, VerifyRole } from '../middleware/verify';
+import { Logout } from '../controllers/logout';
 
 const router = express.Router();
 
-// home route
-router.get('/', (req, res) => {
+// home route - only logged in users can access
+router.get('/', Verify, (req, res) => {
 	try {
 		res.status(200).json({
 			status: 'success',
-			data: [],
-			message: 'Welcome to the Auth API homepage!',
+			message: 'Welcome to the your Dashboard!',
 		});
 	} catch (err) {
 		res.status(500).json({
@@ -21,14 +21,6 @@ router.get('/', (req, res) => {
 			message: 'Internal Server Error',
 		});
 	}
-});
-
-// home route logged in
-router.get('/', Verify, (req, res) => {
-	res.status(200).json({
-		status: 'success',
-		message: 'Welcome to the your Dashboard!',
-	});
 });
 
 // Register route == POST request
@@ -70,7 +62,10 @@ router.post(
 	Login
 );
 
-// Route that only admin user can access
+// Logout route == GET request
+router.get('/logout', Logout);
+
+// Route that only admin user can access == GET request
 router.get('/admin', Verify, VerifyRole, (req, res) => {
 	res.status(200).json({
 		status: 'success',
