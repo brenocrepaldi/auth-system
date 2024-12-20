@@ -43,6 +43,7 @@ This API provides secure authentication and authorization functionality for user
    DATABASE_STRING: Your MongoDB connection string
    PORT: The port on which your API will run (default: 5005)
    SECRET_ACCESS_TOKEN: A unique secret key for generating JWT tokens (highly recommended to keep this secure)
+   SECRET_REFRESH_TOKEN: A unique secret key for generating JWT tokens (highly recommended to keep this secure)
    ```
 
 ### Development
