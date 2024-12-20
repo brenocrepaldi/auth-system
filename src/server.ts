@@ -5,7 +5,7 @@ import express from 'express';
 import { connectDB } from './db';
 import { env } from './env';
 
-import userRoutes from './routes/user-routes';
+import routes from './routes';
 
 // Creates server
 const server = express();
@@ -18,7 +18,7 @@ server.use(express.urlencoded({ extended: false }));
 server.use(express.json());
 
 // Configures user routes
-server.use('/user', userRoutes);
+server.use('/user', routes);
 
 connectDB()
 	.catch((err) => console.error(err))

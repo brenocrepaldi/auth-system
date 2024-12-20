@@ -1,34 +1,31 @@
 import jwt from 'jsonwebtoken';
 import { env } from '../env';
-import User from '../models/user-model';
+import User from '../models/user';
 import Blacklist from '../models/blacklist';
 
 export async function Verify(req, res, next) {
 	try {
 		// get the session cookie from request header
 		const authHeader = req.headers['cookie'];
-
 		// if there is no cookie from request header, send an unauthorized response.
 		if (!authHeader) return res.sendStatus(401);
 
-		// if there is, split the cookie string to get the actual jwt
-		const cookie = authHeader.split('=')[1];
-		const accessToken = cookie.split(';')[0];
+		const { access_token } = req.cookies;
 
 		// checks if that token is blacklisted
-		const checkIfTokenIsBlacklisted = await Blacklist.findOne({
-			token: accessToken,
+		const isTokenIsBlacklisted = await Blacklist.findOne({
+			token: access_token,
 		});
 
 		// if true, send an unathorized message, asking for a re-authentication.
-		if (checkIfTokenIsBlacklisted)
+		if (isTokenIsBlacklisted)
 			return res
 				.status(401)
 				.json({ message: 'This session has expired. Please login' });
 
 		// if token has not been blacklisted, verify with jwt to see if it has been tampered with or not
 		// this checks the integrity of the accessToken
-		jwt.verify(cookie, env.SECRET_ACCESS_TOKEN, async (err, decoded) => {
+		jwt.verify(access_token, env.SECRET_ACCESS_TOKEN, async (err, decoded) => {
 			if (err) {
 				// if token has been altered or has expired, return an unauthorized error
 				return res

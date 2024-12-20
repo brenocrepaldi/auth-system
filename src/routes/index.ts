@@ -5,15 +5,16 @@ import { Validate } from '../middleware/validate';
 import { Login } from '../controllers/login';
 import { Verify, VerifyRole } from '../middleware/verify';
 import { Logout } from '../controllers/logout';
+import { Refresh } from '../middleware/refresh';
 
 const router = express.Router();
 
-// home route - only logged in users can access
+// Home route - only logged in users can access
 router.get('/', Verify, (req, res) => {
 	try {
 		res.status(200).json({
 			status: 'success',
-			message: 'Welcome to the your Dashboard!',
+			message: 'Home route.',
 		});
 	} catch (err) {
 		res.status(500).json({
@@ -28,18 +29,18 @@ router.post(
 	'/register',
 	check('email')
 		.isEmail()
-		.withMessage('Enter a valid email address')
+		.withMessage('Valid email address needed')
 		.normalizeEmail(),
 	check('first_name')
 		.not()
 		.isEmpty()
-		.withMessage('You first name is required')
+		.withMessage('First name is required')
 		.trim()
 		.escape(),
 	check('last_name')
 		.not()
 		.isEmpty()
-		.withMessage('You last name is required')
+		.withMessage('Last name is required')
 		.trim()
 		.escape(),
 	check('password')
@@ -55,7 +56,7 @@ router.post(
 	'/login',
 	check('email')
 		.isEmail()
-		.withMessage('Enter a valid email address')
+		.withMessage('Valid email address needed')
 		.normalizeEmail(),
 	check('password').not().isEmpty(),
 	Validate,
@@ -69,8 +70,11 @@ router.get('/logout', Logout);
 router.get('/admin', Verify, VerifyRole, (req, res) => {
 	res.status(200).json({
 		status: 'success',
-		message: 'Welcome to the Admin portal!',
+		message: 'Admin route.',
 	});
 });
+
+// Refresh Token route == POST request
+router.post('/refresh', Refresh);
 
 export default router;

@@ -70,6 +70,9 @@ Replace `<endpoint>` with the actual path for each route.
 - `GET  /user/admin`  
   Description: Admin route. Accessible only to admin users.
 
+- `POST /user/refresh`  
+  Description: Generates a new JWT (JSON Web Token).
+
 ## Project Structure
 
 ```plaintext
