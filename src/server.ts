@@ -18,7 +18,7 @@ server.use(express.urlencoded({ extended: false }));
 server.use(express.json());
 
 // Configures user routes
-server.use('/user', routes);
+server.use('/', routes);
 
 connectDB()
 	.catch((err) => console.error(err))

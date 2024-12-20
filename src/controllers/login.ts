@@ -22,7 +22,7 @@ export async function Login(req, res) {
 				status: 'failed',
 				data: [],
 				message:
-					'Invalid email or password. Please try again with the correct credentials.',
+					'Invalid email or password.',
 			});
 
 		// Validates password

@@ -8,13 +8,12 @@ import User from '../models/user';
 export async function Register(req, res) {
 	// get required variables from request body
 	// using es6 object destructing
-	const { first_name, last_name, email, password } = req.body;
+	const { name, email, password } = req.body;
 
 	try {
 		// create an instance of a user
 		const newUser = new User({
-			first_name,
-			last_name,
+			name,
 			email,
 			password,
 		});

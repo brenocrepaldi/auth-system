@@ -11,8 +11,7 @@ interface IRefreshToken {
 
 // User Interface
 interface IUser extends Document {
-	first_name: string;
-	last_name: string;
+	name: string;
 	email: string;
 	password: string;
 	role: string;
@@ -24,14 +23,9 @@ interface IUser extends Document {
 // Define the schema
 const UserSchema = new mongoose.Schema<IUser>(
 	{
-		first_name: {
+		name: {
 			type: String,
-			required: [true, 'Firstname is required'],
-			maxlength: 25,
-		},
-		last_name: {
-			type: String,
-			required: [true, 'Lastname is required'],
+			required: [true, 'Name is required'],
 			maxlength: 25,
 		},
 		email: {

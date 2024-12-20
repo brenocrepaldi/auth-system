@@ -31,16 +31,10 @@ router.post(
 		.isEmail()
 		.withMessage('Valid email address needed')
 		.normalizeEmail(),
-	check('first_name')
+	check('name')
 		.not()
 		.isEmpty()
-		.withMessage('First name is required')
-		.trim()
-		.escape(),
-	check('last_name')
-		.not()
-		.isEmpty()
-		.withMessage('Last name is required')
+		.withMessage('Name is required')
 		.trim()
 		.escape(),
 	check('password')

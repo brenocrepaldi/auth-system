@@ -60,25 +60,114 @@ npm run dev
 
 ## API Routes
 
-Replace `<endpoint>` with the actual path for each route.
+Below is the detailed documentation for the available API routes. Replace `<endpoint>` with your server's domain or base URL.
 
-- `GET  /user`  
-  Description: Home route. Accessible only to logged-in users.
-  
-- `POST /user/register`  
-  Description: Registers a new user.
-  
-- `POST /user/login`  
-  Description: Logs in a user and returns a JWT token (if successful).
-  
-- `GET  /user/logout`  
-  Description: Logs out the user and adds them to the blacklist.
-  
-- `GET  /user/admin`  
-  Description: Admin route. Accessible only to admin users.
+---
 
-- `POST /user/refresh`  
-  Description: Generates a new JWT (JSON Web Token).
+### `GET /`
+- **Description:** Home page.
+- **Authentication:** Requires a valid JWT token in the header or cookie.
+- **Successful Response:**
+  - **Status:** 200 OK
+- **Possible Errors:**
+  - 401 Unauthorized: If the token is missing or invalid.
+
+---
+
+### `POST /register`
+- **Description:** Registers a new user in the application.
+- **Authentication:** Not required.
+- **Request:**
+  - **Body:** JSON object with the required fields.
+    ```json
+    {
+      "name": "string",
+      "email": "string",
+      "password": "string",
+    }
+    ```
+- **Successful Response:**
+  - **Status:** 201 Created
+  - **Body:** JSON object with user details.
+- **Possible Errors:**
+  - 400 Bad Request: If required fields are missing or invalid.
+
+---
+
+### `POST /login`
+- **Description:** Logs in a user and returns an access token and refresh token if successful.
+- **Authentication:** Not required.
+- **Request:**
+  - **Body:** JSON object with the following fields.
+    ```json
+    {
+      "email": "string",
+      "password": "string"
+    }
+    ```
+- **Successful Response:**
+  - **Status:** 200 OK
+  - **Body:** 
+    ```json
+    {
+      "status": "success",
+      "message": "User logged in."
+    }
+    ```
+  - **Cookies:** `access_token` and `refresh_token` are set.
+- **Possible Errors:**
+  - 401 Unauthorized: If email or password is incorrect.
+  - 500 Internal Server Error: In case of unexpected errors.
+
+---
+
+### `GET /logout`
+- **Description:** Logs out the user by adding their access token to the blacklist.
+- **Authentication:** Requires a valid JWT token.
+- **Successful Response:**
+  - **Status:** 200 OK
+  - **Body:** 
+    ```json
+    {
+      "status": "success",
+      "message": "User logged out."
+    }
+    ```
+- **Possible Errors:**
+  - 401 Unauthorized: If the token is missing or invalid.
+
+---
+
+### `GET /admin`
+- **Description:** Admin-only route. Accessible only to users with admin privileges.
+- **Authentication:** Requires a valid JWT token and admin privileges.
+- **Successful Response:**
+  - **Status:** 200 OK
+  - **Body:** JSON object with admin-specific information.
+- **Possible Errors:**
+  - 401 Unauthorized: If the token is missing or invalid.
+  - 403 Forbidden: If the user is not an admin.
+
+---
+
+### `POST /refresh`
+- **Description:** Generates a new access token using a valid refresh token.
+- **Authentication:** Requires a valid refresh token.
+- **Request:**
+  - **Cookies:** Must include a `refresh_token`.
+- **Successful Response:**
+  - **Status:** 200 OK
+- **Possible Errors:**
+  - 401 Unauthorized: If the refresh token is missing, invalid, or expired.
+  - 500 Internal Server Error: In case of unexpected errors.
+
+---
+
+### Notes
+- All responses are in JSON format.
+- Authentication tokens are managed using cookies (`httpOnly`, `secure`, `sameSite: None`).
+- Ensure proper error handling and token management on the client side.
+
 
 ## Project Structure
 
