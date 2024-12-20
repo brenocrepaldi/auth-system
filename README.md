@@ -1,7 +1,14 @@
 
 # Authentication and Authorization API
 
-This project provides a Node.js API with authentication and authorization functionalities, built using TypeScript. It serves as a starting point for building secure and robust APIs.
+This API provides secure authentication and authorization functionality for users, using industry-standard practices. Built with Node.js and TypeScript, it is designed to manage user registration, login, and access control with ease.
+
+## Key Features:
+- **JWT Authentication:** Each user, upon successful login, receives a JSON Web Token (JWT) which is used to authenticate requests. The token is sent with each subsequent request and allows the server to validate the user's identity.
+
+- **Cookie-Based Authorization:** To maintain session integrity, the API utilizes cookies for storing JWTs. This enables secure and seamless re-authentication with each new request, without the need for the user to repeatedly log in.
+
+- **User Blacklisting on Logout:** When a user logs out, the server adds their JWT to a blacklist to prevent it from being used in future requests. This ensures that the user's session is terminated and the token is no longer valid.
 
 ## Features
 
